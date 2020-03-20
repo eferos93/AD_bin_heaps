@@ -11,7 +11,12 @@
  *  This class is mean to represent binary heaps.
  */
 typedef struct {
-
+    void *A;
+    unsigned int num_of_elem; // num of elem stored
+    unsigned int max_size; //max # of nodes
+    size_t key_size; // size of the key type
+    total_order_type leq; 
+    void *max_order_value; //max value stored in the heap
 } binheap_type;
 
 /**********************************************************************
@@ -67,6 +72,7 @@ const void *extract_min(binheap_type *H);
  *                    stored in the heap.
  * @param max_size is the maximum number of nodes in the heap (i.e., 
  *                 the size of A).
+ * @param key_size type's size of the values stored in A
  * @param leq is the total order characterizing the heap.
  * @return a pointer to the new binary heap.
  **********************************************************************/
