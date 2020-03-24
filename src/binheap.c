@@ -1,5 +1,6 @@
 #include <binheap.h>
 #include <string.h>
+#include <stdio.h>
 
 #define PARENT(node) ((node-1)/2)
 #define LEFT_CHILD(node) (2*(node)+1)
@@ -92,6 +93,29 @@ void heapify(binheap_type *H, unsigned int node)
     
 }
 
+
+const void *find_max(void *A, unsigned int n_of_elem,
+                     size_t k_size, total_order_type ord
+                    )
+{
+    if (n_of_elem == 0)
+    {
+        return NULL;
+    }
+    
+    const void *max_value = A;
+    for (const void* addr = A+k_size; addr!=A+n_of_elem*k_size; addr+=k_size)
+    {
+        if (!ord(addr, max_value))
+        {
+            max_value = addr;
+        }
+    }
+
+    return max_value;
+    
+}
+
 binheap_type *build_heap(void *A, 
                          const unsigned int num_of_elem,
                          const unsigned int max_size,  
@@ -126,28 +150,6 @@ binheap_type *build_heap(void *A,
     heapify(H, 0);
     
     return H;
-}
-
-const void *find_max(void *A, unsigned int n_of_elem,
-                     size_t k_size, total_order_type ord
-                    )
-{
-    if (n_of_elem == 0)
-    {
-        return NULL;
-    }
-    
-    const void *max_value = A;
-    for (const void* addr = A+k_size; addr!=A+n_of_elem*k_size; addr+=k_size)
-    {
-        if (!leq(addr, max_value))
-        {
-            max_value = addr;
-        }
-    }
-
-    return max_value;
-    
 }
 
 
@@ -188,13 +190,42 @@ const void *decrease_key(binheap_type *H, void *node, const void *value)
 
 const void *insert_value(binheap_type *H, const void *value)
 {
-    // This function must be re-implemented
+    if (H->max_size == H->num_of_elem)
+    {
+        return NULL;
+    }
+    
+    if (H->num_of_elem == 0 || !H->leq(value, H->max_order_value))
+    {
+        memcpy(H->max_order_value, value, H->key_size);
+    }
 
-    return NULL;
+    // num_of_elem is the index of the location past the last one 
+    void *new_node_addr = ADDR(H, H->num_of_elem);
+    memcpy(new_node_addr, H->max_order_value, H->key_size);
+    H->num_of_elem++;
+    
+    return decrease_key(H, new_node_addr, value);
+    
 }
 
 void print_heap(const binheap_type *H, 
                 void (*key_printer)(const void *value))
 {
-    // This function must be implemented
+    // stores the index of the left mosst node of the next level
+    unsigned int next_level_node = 1;
+    for (unsigned int  node = 0; node < H->num_of_elem; node++)
+    {
+        if (node == next_level_node)
+        {
+            printf("\n");
+            next_level_node=LEFT_CHILD(node);
+        }
+        else
+        {
+            printf("\t");
+        }
+        key_printer(ADDR(H, node));
+    }
+    printf("\n");
 }
