@@ -29,26 +29,6 @@ const void *min_value(const binheap_type *H)
     return ADDR(H, 0);
 }
 
-const void *extract_min(binheap_type *H)
-{
-    // This function must be re-implemented
-    if (is_heap_empty(H))
-    {
-        return NULL;
-    }
-    
-    //swapping the keyes among the root A[0]
-    //and the rightmost leaf of the last level A[num_of_elem-1]
-    swap_keys(H, 0, H->num_of_elem-1);
-    //deleting the rightmost leaf of the last level
-    //A[num_of_elem-1]
-    H->num_of_elem--;
-    //we need to restore the heap porperty
-    heapify(H, 0);
-
-    return ADDR(H, H->num_of_elem+1);
-}
-
 void swap_keys(binheap_type *H, unsigned int node_a, unsigned int node_b)
 {
     void *source = ADDR(H, node_a);
@@ -89,8 +69,33 @@ void heapify(binheap_type *H, unsigned int node)
         {
             destination_node = child;
         }
+
+        if (destination_node != node) 
+        {
+            swap_keys(H, destination_node, node);
+        }
     } while (destination_node != node);
     
+}
+
+const void *extract_min(binheap_type *H)
+{
+    // This function must be re-implemented
+    if (is_heap_empty(H))
+    {
+        return NULL;
+    }
+    
+    //swapping the keyes among the root A[0]
+    //and the rightmost leaf of the last level A[num_of_elem-1]
+    swap_keys(H, 0, H->num_of_elem-1);
+    //deleting the rightmost leaf of the last level
+    //A[num_of_elem-1]
+    H->num_of_elem--;
+    //we need to restore the heap porperty
+    heapify(H, 0);
+
+    return ADDR(H, H->num_of_elem+1);
 }
 
 
